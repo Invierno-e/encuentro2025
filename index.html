@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XVII ENCUENTRO ANUAL | GESTIÓN Y DESARROLLO DE PERSONAS 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #f5f5f5;
+            --accent-color: #ffc107;
+            --bg-color: #e0e0e0;
+            --text-color: #333;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 20px auto;
+            border: 2px solid var(--primary-color);
+            box-shadow: 10px 10px 0px var(--primary-color);
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        header h1 {
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 2em;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        
+        header p {
+            font-size: 0.9em;
+            margin: 5px 0 0;
+            text-transform: uppercase;
+        }
+
+        .event-details {
+            font-size: 0.8em;
+            text-transform: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--secondary-color);
+            opacity: 0.9;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--primary-color);
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .accordion-container {
+            min-height: 400px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .accordion-item {
+            border: 2px solid var(--primary-color);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            background-color: var(--secondary-color);
+        }
+        
+        .accordion-item.hidden {
+            opacity: 0;
+            height: 0;
+            margin-bottom: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .accordion-item:hover {
+            box-shadow: 5px 5px 0px var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .accordion-item.active .accordion-header {
+            background-color: #ffdb58;
+            color: var(--primary-color);
+        }
+
+        .accordion-header h3 {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 700;
+            flex-grow: 1;
+            text-transform: uppercase;
+            padding-left: 10px;
+        }
+
+        .accordion-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        .accordion-toggle-icon {
+            font-size: 1.2em;
+            color: var(--primary-color);
+            transition: transform 0.3s;
+        }
+        
+        .accordion-item.active .accordion-toggle-icon {
+            transform: rotate(180deg);
+            color: var(--primary-color);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 15px;
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+            background-color: var(--secondary-color);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 500px;
+            padding: 15px;
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .details-list li {
+            margin-bottom: 8px;
+        }
+
+        .details-list li strong {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+        
+        .task-list, .speaker-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .horario {
+            font-weight: 700;
+            color: #4a4a4a;
+            min-width: 80px;
+            font-size: 1.1em;
+        }
+        
+        .moment-label {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 4px 8px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        /* Colores específicos para las etiquetas de momento */
+        .accordion-item[data-moment="antes"] .moment-label {
+            background-color: #6c5ce7;
+        }
+
+        .accordion-item[data-moment="durante"] .moment-label {
+            background-color: #00b894;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+            }
+            .container {
+                margin: 10px;
+                border: 1px solid var(--primary-color);
+                box-shadow: 5px 5px 0px var(--primary-color);
+            }
+            header h1 {
+                font-size: 1.5em;
+            }
+            .accordion-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .horario {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>XVII ENCUENTRO ANUAL</h1>
+            <p>Juntas y juntos, construyendo una mejor función pública</p>
+            <div class="event-details">
+                <p>Fecha: 01 de octubre 2025</p>
+                <p>Lugar: Hotel Gran Palace (Huérfanos 1178)</p>
+                <p>Horario: 8:30 a 17:00 horas</p>
+            </div>
+        </header>
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="antes">Antes</button>
+            <button class="filter-btn" data-filter="durante">Durante</button>
+        </div>
+
+        <div class="accordion-container">
+            <!-- Sección Antes -->
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">⚙️</span>
+                    <h3>Organización Central</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Cristóbal Valdivieso, Sonia Ortiz, Eric Ulloa, Danae Mlynarz, Lorena Pérez, Hugo Marchant
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">🤝</span>
+                    <h3>Equipo Apoyo ADP</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Composición:</strong>
+                            <ul class="speaker-list">
+                                <li>Alejandra Iturriaga</li>
+                                <li>Allison Pino</li>
+                                <li>Daniela Reyes</li>
+                                <li>Valentina Cabrera</li>
+                                <li>Rosa Salazar</li>
+                                <li>Alfredo Molina</li>
+                                <li>Francisca Troncoso</li>
+                                <li>Fernando Calderon</li>
+                                <li>Cinthia Silva</li>
+                                <li>Nicole Castañeda</li>
+                                <li>Paulina Saez</li>
+                                <li>Karina Manquehual</li>
+                                <li>Felipe Miranda</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">✍️</span>
+                    <h3>Guión y Contenidos</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Cristóbal Valdivieso
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">📢</span>
+                    <h3>Contraparte Comunicaciones</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Hugo Marchant
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">🔗</span>
+                    <h3>Enlace RH Management</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Pablo Ruiz
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-moment="antes">
+                <div class="accordion-header">
+                    <span class="moment-label">Antes</span>
+                    <span class="accordion-icon">📊</span>
+                    <h3>Evaluación del Encuentro</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Pablo Meier
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Sección Durante -->
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🎥</span>
+                    <h3>Apoyo Streaming</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Raúl Agurto
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🎙️</span>
+                    <h3>Conducción</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsables:</strong> Cristóbal Valdivieso (Jornada AM) y Daniela Triantafilo (Jornada PM)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">📝</span>
+                    <span class="horario">08:15-09:00</span>
+                    <h3>Registro y Acreditación</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsable:</strong> Área Campus y equipo ADP
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Asistencia y acreditación, entrega de puntos de colores para el conversatorio grupal.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">👋</span>
+                    <span class="horario">09:00-09:15</span>
+                    <h3>Actividad de Bienvenida (Menti)</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsable:</strong> Javiera Vargas, Área Fortalecimiento Institucional
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Diseño y aplicación de la actividad Menti.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🎙️</span>
+                    <span class="horario">09:00-09:15</span>
+                    <h3>Bienvenida - Sra. Heidi Berner Herrera</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestro de Ceremonia:</strong> Cristóbal Valdivieso
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Lorena Pérez-Subdirectora SGDP
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Minuta informativa para la Subsecretaria.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🗣️</span>
+                    <span class="horario">09:15-09:45</span>
+                    <h3>Presentación - Sr. Pedro Guerra Loins</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestro de Ceremonia:</strong> Cristóbal Valdivieso
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Eric Ulloa-Área Comunicaciones DNSC
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Diseño de PPT con insumos SGDP.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">👥</span>
+                    <span class="horario">09:45-11:15</span>
+                    <h3>PANEL 1: "Empleo Público: Tensiones y Propuestas"</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestro de Ceremonia:</strong> Cristóbal Valdivieso
+                        </li>
+                        <li>
+                            <strong>Moderadora:</strong> Lorena Pérez
+                        </li>
+                        <li>
+                            <strong>Participantes:</strong>
+                            <ul class="speaker-list">
+                                <li>Juan Francisco Galli, Director Ejecutivo Centro de Incidencia Pública Pivotes</li>
+                                <li>Eduardo Abarzúa, Director académico del Centro Interdisciplinar de Políticas Públicas Universidad Alberto Hurtado</li>
+                                <li>Bettina Horst, directora ejecutiva de LyD y Consejera del sistema de Alta Dirección Pública</li>
+                                <li>Cristián Pliscoff, Director Administración Pública, Pontificia Universidad Católica de Chile</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Puesta en escena de sillones por el Área de Comunicaciones y productora. Área Empleo Público se encarga de recepción de consultas público para los panelistas.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">📸</span>
+                    <span class="horario">11:15-11:30</span>
+                    <h3>Fotografía Oficial del Encuentro</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Responsable:</strong> César Muñoz-Área Comunicaciones DNSC
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Toma de foto grupal.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">☕</span>
+                    <span class="horario">11:30-11:45</span>
+                    <h3>Pausa Café</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Descripción:</strong> Habilitación de sillas para el conversatorio grupal.
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Área Fortalecimiento y equipo ADP.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🤝</span>
+                    <span class="horario">12:00-13:30</span>
+                    <h3>CONVERSATORIO GRUPAL: "Rol Directivo y Gestión de Personas"</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestra de Ceremonia:</strong> Mirtha Céspedes
+                        </li>
+                        <li>
+                            <strong>Responsables:</strong> Mirtha Céspedes, Caterina Prado, Nicole Castro, Allison Pino
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Área Fortalecimiento Institucional y equipo ADP: Acompañar a los grupos de conversación y diseño/aplicación de la actividad Menti.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">⏸️</span>
+                    <span class="horario">13:30-14:30</span>
+                    <h3>Horario Libre</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Descripción:</strong> Tiempo libre para los asistentes.
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Volver a colocar sillas en su lugar.
+                        </li>
+                        <li>
+                            <strong>Responsables:</strong> Área Fortalecimiento Institucional y Equipo ADP
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">💡</span>
+                    <span class="horario">14:30-14:45</span>
+                    <h3>Actividad de Activación (Menti)</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestra de Ceremonia:</strong> Daniela Triantafilo
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Javiera Vargas, Área Fortalecimiento Institucional
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Diseño y aplicación de la actividad Menti.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">⚖️</span>
+                    <span class="horario">14:45-15:45</span>
+                    <h3>PANEL 2: "Ética y Probidad"</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestra de Ceremonia:</strong> Daniela Triantafilo
+                        </li>
+                        <li>
+                            <strong>Moderadora:</strong> Danae Mlynarz
+                        </li>
+                        <li>
+                            <strong>Participantes:</strong>
+                            <ul class="speaker-list">
+                                <li>Helmut Griott Bohn, Primer Vicepresidente de Relaciones Nacionales de ANEF</li>
+                                <li>María Jaraquemada, Consejera del Consejo Directivo para la Transparencia</li>
+                                <li>Valeria Lübbert, Secretaria Ejecutiva Comisión de Integridad Pública y Transparencia</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Puesta en escena de sillones por el Área de Comunicaciones y productora. Área Empleo Público se encarga de recepción de consultas público para los panelistas.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🎤</span>
+                    <span class="horario">15:45-16:45</span>
+                    <h3>SPEAKER: Sr. Mario Waissbluth Subelman</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestra de Ceremonia:</strong> Daniela Triantafilo
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Pedro Guerra
+                        </li>
+                        <li>
+                            <strong>Tareas:</strong> Área Empleo Público: Recepción de consultas y derivación al panel.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion-item" data-moment="durante">
+                <div class="accordion-header">
+                    <span class="moment-label">Durante</span>
+                    <span class="accordion-icon">🔚</span>
+                    <span class="horario">16:45-17:00</span>
+                    <h3>Palabras de Cierre</h3>
+                    <span class="accordion-toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <ul class="details-list">
+                        <li>
+                            <strong>Maestra de Ceremonia:</strong> Daniela Triantafilo
+                        </li>
+                        <li>
+                            <strong>Responsable:</strong> Pedro Guerra
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const accordionItems = document.querySelectorAll('.accordion-item');
+
+            function filterItems(filter) {
+                accordionItems.forEach(item => {
+                    const moment = item.getAttribute('data-moment');
+                    if (filter === 'all' || moment === filter) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            }
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    filterItems(button.getAttribute('data-filter'));
+                });
+            });
+
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const item = header.closest('.accordion-item');
+                    const isActive = item.classList.contains('active');
+
+                    // Close all other items before opening the new one
+                    document.querySelectorAll('.accordion-item.active').forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle active class on clicked item
+                    if (!isActive) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
